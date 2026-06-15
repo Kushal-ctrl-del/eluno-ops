@@ -76,6 +76,6 @@ AI-powered order management system for eyewear brand Eluno. Tracks orders throug
 - Integration with actual ERP systems
 
 ## Deployment
-- Live: [your-vercel-url].vercel.app
+- Live: https://eluno-ops.vercel.app
 - Database: Supabase (Singapore region)
-- Demo: [link-to-recorded-video]
+- Demo: https://www.loom.com/share/8a53db78e29e4fe7ba13b9c89caff9ee
