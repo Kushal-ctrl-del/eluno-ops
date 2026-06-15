@@ -1,13 +1,26 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
 
-export async function GET(req: Request, { params }: any) {
-  const { data } = await supabase.from("orders").select("*").eq("id", params.id).single();
-  return NextResponse.json({ data });
-}
+export async function GET() {
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+    
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-export async function PATCH(req: Request, { params }: any) {
-  const body = await req.json();
-  const { data } = await supabase.from("orders").update(body).eq("id", params.id).select().single();
-  return NextResponse.json({ data });
+    if (error) {
+      console.error("Supabase error:", JSON.stringify(error));
+      return NextResponse.json({ data: [], error: error.message });
+    }
+
+    return NextResponse.json({ data: data || [] });
+  } catch (err: any) {
+    console.error("Catch error:", err.message);
+    return NextResponse.json({ data: [], error: err.message });
+  }
 }
