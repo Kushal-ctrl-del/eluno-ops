@@ -1,38 +1,20 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
 
 export async function GET() {
   try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
     const { data, error } = await supabase
       .from("breach_alerts")
       .select("*")
       .order("created_at", { ascending: false });
-    
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    if (error) return NextResponse.json({ data: [] });
     return NextResponse.json({ data: data || [] });
   } catch (err) {
     return NextResponse.json({ data: [] });
-  }
-}
-
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { data, error } = await supabase.from("breach_alerts").insert(body).select().single();
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ data });
-  } catch (err) {
-    return NextResponse.json({ error: "Failed to create alert" }, { status: 500 });
-  }
-}
-
-export async function PATCH(request: Request) {
-  try {
-    const { id } = await request.json();
-    const { data, error } = await supabase.from("breach_alerts").update({ acknowledged: true }).eq("id", id).select().single();
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ data });
-  } catch (err) {
-    return NextResponse.json({ error: "Failed to update alert" }, { status: 500 });
   }
 }
